@@ -11,12 +11,6 @@ namespace Addresses
 
 std::string menu_top_bar[] = { "-=-=-=-=-=-=-=-=-=-", "=-=-=-=-=-=-=-=-=-=" };
 
-// Define key codes for the combinations
-const int ALT_1[] = { VK_MENU, 0x31 }; // Alt + 1
-const int ALT_2[] = { VK_MENU, 0x32 }; // Alt + 2
-const int SHIFT_2[] = { VK_LSHIFT, 0x32 }; // Shift + 2
-const int CTRL_2[] = { VK_CONTROL, 0x32 }; // Ctrl + 2
-
 HANDLE p_handle;
 
 template <typename T>
@@ -60,14 +54,13 @@ int main()
 	p_handle = OpenProcess(PROCESS_ALL_ACCESS, false, pID);
 
 	bool is_1_pressed = false;
-	bool is_alt_2_pressed = false;
-	bool is_shift_2_pressed = false;
-	bool is_ctr_2_pressed = false;
+	bool is_2_pressed = false;
+	bool is_3_pressed = false;
 
 	bool is_menu_open = false;
 	bool is_alt_m_pressed = false;
 
-	std::string default_menu_text = "Page 1:                 1 - $10000              ALT + M to close";
+	std::string default_menu_text = "Page 1:                 1 - $10000             2 - Speed up game    3 - Reset game speed  ALT + M to close";
 	std::string current_menu_text = default_menu_text;
 
 	while (running)
@@ -75,6 +68,7 @@ int main()
 		timer++;
 		if (timer > 30)
 			timer = 0;
+
 
 		// Open/Close menu
 		if ((GetAsyncKeyState(VK_MENU) & 0x8000) && (GetAsyncKeyState('M') & 0x8000))
@@ -88,10 +82,9 @@ int main()
 		else
 			is_alt_m_pressed = false;
 
-
-		// Money
 		if (is_menu_open)
 		{
+			// Add money
 			if (GetAsyncKeyState('1') & 0x8000)
 			{
 				if (!is_1_pressed)
@@ -100,57 +93,48 @@ int main()
 					DWORD current_money = GetValue<DWORD>(Addresses::money);
 					DWORD new_money = current_money + 10000;
 					SetValue(Addresses::money, new_money);
+					timer = 1;
 					current_menu_text = "Added $10000";
+					DisplayIngameAlert(current_menu_text);
 					std::cout << "Money: " << GetValue<DWORD>(Addresses::money) << std::endl;
 				}
 			}
 			else
 				is_1_pressed = false;
-		}
 
-		// Get game speed
-		if ((GetAsyncKeyState(VK_MENU) & 0x8000) && (GetAsyncKeyState(0x32) & 0x8000))
-		{
-			if (!is_alt_2_pressed)
+			// Speed up game
+			if (GetAsyncKeyState('2') & 0x8000)
 			{
-				is_alt_2_pressed = true;
-				float current_game_speed = GetValue<float>(Addresses::game_speed);
-				DisplayIngameAlert("Current game speed: " + std::to_string(current_game_speed));
-				std::cout << "Game Speed: " << current_game_speed << std::endl;
+				if (!is_2_pressed)
+				{
+					is_2_pressed = true;
+					float value = GetValue<float>(Addresses::game_speed) + GetValue<float>(Addresses::game_speed) / 2;
+					SetValue(Addresses::game_speed, value);
+					current_menu_text = "Game speed: " + std::to_string(value);
+					DisplayIngameAlert(current_menu_text);
+					std::cout << "Game Speed: " << value << std::endl;
+				}
 			}
-		}
-		else
-			is_alt_2_pressed = false;
+			else
+				is_2_pressed = false;
 
-		// Increase game speed
-		if ((GetAsyncKeyState(VK_LSHIFT) & 0x8000) && (GetAsyncKeyState(0x32) & 0x8000))
-		{
-			if (!is_shift_2_pressed)
+			// Reset game speed
+			if (GetAsyncKeyState('3') & 0x8000)
 			{
-				is_shift_2_pressed = true;
-				float value = GetValue<float>(Addresses::game_speed) + GetValue<float>(Addresses::game_speed) / 2;
-				SetValue(Addresses::game_speed, value);
-				DisplayIngameAlert("New game speed: " + std::to_string(value));
-				std::cout << "New Game Speed: " << GetValue<float>(Addresses::game_speed) << std::endl;
+				if (!is_3_pressed)
+				{
+					is_3_pressed = true;
+					float value = 1.0f;
+					SetValue(Addresses::game_speed, value);
+					current_menu_text = "Game speed reset";
+					DisplayIngameAlert(current_menu_text);
+					std::cout << "Game speed reset" << std::endl;
+				}
 			}
-		}
-		else
-			is_shift_2_pressed = false;
+			else
+				is_3_pressed = false;
 
-		// Reset game speed
-		if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) && (GetAsyncKeyState(0x32) & 0x8000))
-		{
-			if (!is_ctr_2_pressed)
-			{
-				is_ctr_2_pressed = true;
-				float value = 1.0f;
-				SetValue(Addresses::game_speed, value);
-				DisplayIngameAlert("Game speed reset");
-				std::cout << "Game speed reset" << std::endl;
-			}
 		}
-		else
-			is_ctr_2_pressed = false;
 
 		std::cout << "Menu open: " << std::boolalpha << is_menu_open << "\n";
 
