@@ -10,6 +10,8 @@ namespace Addresses
 	LPCVOID game_speed = reinterpret_cast<LPCVOID>(0xB7CB64);
 };
 
+std::string menu_top_bar[] = {"-=-=-=-=-=-=-=-=-=-", "=-=-=-=-=-=-=-=-=-="};
+
 // Define key codes for the combinations
 const int ALT_1[] = { VK_MENU, 0x31 }; // Alt + 1
 const int ALT_2[] = { VK_MENU, 0x32 }; // Alt + 2
@@ -40,16 +42,18 @@ T GetValue(LPCVOID address)
 
 void DisplayIngameAlert(const std::string& text)
 {
-	const char* alert_text = text.c_str();
-	WriteProcessMemory(p_handle, (LPVOID)0xBAA7A0, alert_text, strlen(alert_text) + 1, nullptr);
+    static int alert_count = 0; // Keep track of the number of alerts displayed
+	if (alert_count > 1)
+		alert_count = 0;
+	std::string unique_text = menu_top_bar[alert_count] + " " + text;
+    const char* alert_text = unique_text.c_str();
+    WriteProcessMemory(p_handle, (LPVOID)0xBAA7A0, alert_text, strlen(alert_text) + 1, nullptr);
+    alert_count++;
 }
 
 int main()
 {
 	bool running = true;
-
-	// Variable to hold in-game money value
-	DWORD money = 0;
 
 	// Find game window
 	HWND hWnd = FindWindowA(0, "GTA: San Andreas");
@@ -65,8 +69,25 @@ int main()
 	bool is_alt_2_pressed = false;
 	bool is_shift_2_pressed = false;
 	bool is_ctr_2_pressed = false;
+
+	bool is_menu_open = false;
+	bool is_alt_m_pressed = false;
+
 	while (running)
 	{
+		// Open/Close menu
+		if ((GetAsyncKeyState(VK_MENU) & 0x8000) && (GetAsyncKeyState('M') & 0x8000))
+		{
+			if (!is_alt_m_pressed)
+			{
+				is_menu_open = !is_menu_open;
+				is_alt_m_pressed = true;
+			}
+		}
+		else
+			is_alt_m_pressed = false;
+
+
 		// Money
 		if ((GetAsyncKeyState(VK_MENU) & 0x8000) && (GetAsyncKeyState(0x31) & 0x8000))
 		{
@@ -127,7 +148,12 @@ int main()
 		else
 			is_ctr_2_pressed = false;
 
-		Sleep(16);
+		std::cout << std::boolalpha << is_menu_open << "\n";
+
+		if (is_menu_open)
+			DisplayIngameAlert("Menu! Press ALT+M to close.");
+
+		Sleep(100);
 	}
 
 	return 0;
