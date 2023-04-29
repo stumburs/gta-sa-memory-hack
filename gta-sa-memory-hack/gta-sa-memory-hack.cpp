@@ -6,7 +6,6 @@
 namespace Addresses
 {
 	LPCVOID money = reinterpret_cast<LPCVOID>(0x00B7CE50);
-	LPCVOID blur_level = reinterpret_cast<LPCVOID>(0x8D5104);
 	LPCVOID game_speed = reinterpret_cast<LPCVOID>(0xB7CB64);
 };
 
@@ -17,12 +16,6 @@ const int SHIFT_2[] = { VK_LSHIFT, 0x32 }; // Shift + 2
 const int CTRL_2[] = { VK_CONTROL, 0x32 }; // Ctrl + 2
 
 HANDLE p_handle;
-
-// Define the function type
-typedef void (*MyFunctionType)();
-
-// Get the function address
-MyFunctionType MyFunction = (MyFunctionType)0x0043A510;
 
 template <typename T>
 void SetValue(LPCVOID address, T& value)
