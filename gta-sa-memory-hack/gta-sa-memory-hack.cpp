@@ -1,38 +1,63 @@
 #include <Windows.h>
 #include <iostream>
 
+HANDLE p_handle;
+
+template <typename T>
+void SetValue(LPCVOID address, T& value)
+{
+	WriteProcessMemory(p_handle, (LPVOID)address, &value, sizeof(value), nullptr);
+}
+
+template <typename T>
+T GetValue(LPCVOID address)
+{
+	T t{};
+	ReadProcessMemory(p_handle, (LPVOID)address, &t, sizeof(t), nullptr);
+	return t;
+}
+
 int main()
 {
-    // Variable to hold in-game money value
-    DWORD money = 0;
+	bool running = true;
 
-    // Variable to set new money value
-    DWORD new_money = 69420;
+	// Variable to hold in-game money value
+	DWORD money = 0;
 
-    // Find game window
-    HWND hWnd = FindWindowA(0, "GTA: San Andreas");
+	// Variable to set new money value
+	DWORD new_money = 69420;
 
-    // Set process ID
-    DWORD pID = 0;
-    GetWindowThreadProcessId(hWnd, &pID);
+	// Find game window
+	HWND hWnd = FindWindowA(0, "GTA: San Andreas");
 
-    // Do something
-    HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, false, pID);
+	// Set process ID
+	DWORD pID = 0;
+	GetWindowThreadProcessId(hWnd, &pID);
 
-    // Memory address of money in game
-    LPCVOID address = reinterpret_cast<LPCVOID>(0x00B7CE50);
+	// Do something
+	p_handle = OpenProcess(PROCESS_ALL_ACCESS, false, pID);
 
-    // Read money value into variable
-    ReadProcessMemory(pHandle, (LPVOID)address, &money, sizeof(money), nullptr);
-    std::cout << "Money before funny: " << money << "\n";
+	// Memory address of money in game
+	LPCVOID money_address = reinterpret_cast<LPCVOID>(0x00B7CE50);
 
-    // Set money value from variable
-    WriteProcessMemory(pHandle, (LPVOID)address, &new_money, sizeof(new_money), nullptr);
+	bool is_alt_1_pressed = false;
+	while (running)
+	{
+		// Money
+		if ((GetAsyncKeyState(VK_MENU) & 0x8000) && (GetAsyncKeyState(0x31) & 0x8000))
+		{
+			if (!is_alt_1_pressed)
+			{
+				is_alt_1_pressed = true;
+				SetValue(money_address, new_money);
+				std::cout << "Money: " << GetValue<DWORD>(money_address) << std::endl;
+			}
+		}
+		else
+			is_alt_1_pressed = false;
 
-    // Read money value again to see if it worked
-    ReadProcessMemory(pHandle, (LPVOID)address, &money, sizeof(money), nullptr);
-    std::cout << "Money after funny: " << money << "\n";
+		Sleep(100);
+	}
 
-    system("PAUSE");
-    return 0;
+	return 0;
 }
