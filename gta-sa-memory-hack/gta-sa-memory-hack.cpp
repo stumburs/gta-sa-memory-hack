@@ -127,7 +127,7 @@ int main()
 		else
 			is_ctr_2_pressed = false;
 
-		Sleep(100);
+		Sleep(16);
 	}
 
 	return 0;
