@@ -130,6 +130,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="gta-sa-memory-hack.cpp" />
+    <ClCompile Include="MemoryFunctions.cpp" />
+    <ClCompile Include="PlayerFunctions.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Addresses.h" />
+    <ClInclude Include="MemoryFunctions.h" />
+    <ClInclude Include="PlayerFunctions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
