@@ -25,7 +25,6 @@ InputMap CreateInputMap()
 void HandleInput(const InputMap& input_map)
 {
 	for (auto& input : input_map)
-	{
 		if (GetAsyncKeyState(input.first) & 0x8000)
 		{
 			if (!input.second.first)
@@ -36,7 +35,6 @@ void HandleInput(const InputMap& input_map)
 		}
 		else
 			const_cast<bool&>(input.second.first) = false;
-	}
 }
 
 int main()

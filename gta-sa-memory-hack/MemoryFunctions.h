@@ -17,21 +17,21 @@ namespace MemoryFunctions
 	// Set p_handle
 	void SetProcessHandle(HANDLE handle);
 
-	//// Set value in specific memory address
+	// Set value in specific memory address
 	template <typename T>
 	void SetValue(const LPCVOID address, T& value)
 	{
 		WriteProcessMemory(p_handle, (LPVOID)address, &value, sizeof(value), nullptr);
 	}
 
-	//// Set value by also specifying buffer size in specific memory address
+	// Set value by also specifying buffer size in specific memory address
 	template <typename T>
 	void SetValue(const LPCVOID address, T& value, std::size_t size)
 	{
 		WriteProcessMemory(p_handle, (LPVOID)address, &value, size, nullptr);
 	}
 
-	//// Get value from specific memory address
+	// Get value from specific memory address
 	template <typename T>
 	T GetValue(const LPCVOID address)
 	{
