@@ -6,29 +6,19 @@
 namespace MemoryFunctions
 {
 	HANDLE p_handle = nullptr;
-	std::string menu_top_bar[2] = { "-=-=-=-=-=-=-=-=-=-", "=-=-=-=-=-=-=-=-=-=" };
+	std::string menu_top_bar[2] = { "~b~MENU~n~", "~r~MENU~n~" };
 
 	void SetProcessHandle(HANDLE handle)
 	{
 		p_handle = handle;
 	}
 
-	//void DisplayIngameAlert(const std::string& text)
-	//{
-	//	static int alert_count = 0; // Keep track of the number of alerts displayed
-	//	if (alert_count > 1)
-	//		alert_count = 0;
-	//	std::string unique_text = menu_top_bar[alert_count] + " " + text;
-	//	std::cout << unique_text << "\n";
-	//	SetValue(Addresses::text_box, unique_text.c_str());
-	//	alert_count++;
-	//}
 	void DisplayIngameAlert(const std::string& text)
 	{
 		static int alert_count = 0; // Keep track of the number of alerts displayed
 		if (alert_count > 1)
 			alert_count = 0;
-		std::string unique_text = menu_top_bar[alert_count] + " " + text;
+		std::string unique_text = menu_top_bar[alert_count] + text;
 		std::cout << unique_text << "\n";
 		const char* alert_text = unique_text.c_str();
 		size_t size = strlen(alert_text) + 1;

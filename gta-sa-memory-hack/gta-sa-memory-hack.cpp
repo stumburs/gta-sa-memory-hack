@@ -55,7 +55,7 @@ int main()
 
 	bool is_menu_open = false;
 	bool is_alt_m_pressed = false;
-	std::string default_menu_text = "Page 1:                 1 - $10000             2 - Speed up game    3 - Reset game speed  ALT + M to close";
+	std::string default_menu_text = "~g~1~s~ - $10000~n~~g~2~s~ - Speed up game~n~~g~3~s~ - Reset game speed~n~~g~ALT ~s~+ ~g~M ~s~to close";
 	std::string current_menu_text = default_menu_text;
 
 	InputMap input_map = CreateInputMap();
